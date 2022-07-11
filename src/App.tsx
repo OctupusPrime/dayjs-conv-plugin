@@ -24,8 +24,6 @@ function App() {
   const [timezone, setTimezone] = useState<string>('')
   const [timeRange, setTimeRange] = useState<[number, number]>([9, 17])
 
-  // const [secondsArr, setSecondsArr] = useState<(SecondsArr | null)[]>([])
-
   const secondsArr: (SecondsArr | null)[] = useMemo(() => {
     const startTime = dayjs().tz(timezone || 'UTC', true).hour(timeRange[0]).startOf('hour')
     const endTime   = dayjs().tz(timezone || 'UTC', true).hour(timeRange[1]).startOf('hour')
@@ -36,19 +34,6 @@ function App() {
   const datesArr: {start: Dayjs, end: Dayjs} = useMemo(() => {
     return dayjs().convFromSeconds(secondsArr)
   }, [secondsArr])
-
-
-  // const convertTime = () => {
-
-  //   const startTime = dayjs().tz(timezone, true).hour(timeRange[0]).startOf('hour')
-  //   const endTime   = dayjs().tz(timezone, true).hour(timeRange[1]).startOf('hour')
-
-  //   const secondsArrr = startTime.utcSecond(endTime)
-
-  //   console.log(secondsArrr)
-  //   const res = dayjs().startOf('week').convFromSeconds(secondsArr)
-  //   console.log(res.start.format(), res.end.format())
-  // }
 
   return (
     <div className="max-w-lg mx-auto w-[95%]">
@@ -94,13 +79,7 @@ function App() {
           onChange={setTimeRange}
         />
       </div>
-
-      {/* <div className="mb-4 text-center">
-        <Button onClick={convertTime}>
-          Convert
-        </Button>  
-      </div> */}
-
+    
       <div className="mb-4">
         <p className='font-medium mb-2'>Date in seconds items</p>
 
