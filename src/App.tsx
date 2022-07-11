@@ -114,10 +114,10 @@ function App() {
         <DateRangeItem 
           {...datesArr}/>
 
-        <p className='text-center text-gray-600 font-sm'>Local time</p>
+        <p className='text-center text-gray-600 font-sm'>Selected tz time</p>
         <DateRangeItem 
-          start={datesArr.start.tz(timezone)}
-          end={datesArr.end.tz(timezone)}/>
+          start={datesArr.start.tz(timezone || 'UTC')}
+          end={datesArr.end.tz(timezone || 'UTC')}/>
       </div>
     </div>
   )
