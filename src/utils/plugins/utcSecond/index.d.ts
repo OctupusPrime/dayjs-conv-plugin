@@ -12,9 +12,9 @@ declare module 'dayjs' {
   interface Dayjs {
     getTimeSeconds(): number
 
-    utcSecond(endTime: Dayjs): (TimeSeconds | null)[]
+    utcSecond(endTime: Dayjs): (TimeSeconds | null)[] | {start: number, end: number}
 
-    convFromSeconds(secondsArr: (TimeSeconds | null)[]): {start: Dayjs, end: Dayjs}
+    convFromSeconds(secondsArr: (TimeSeconds | null)[] | {start: number, end: number}): {start: Dayjs, end: Dayjs}
   }
 
   // export func for DayjsFuctory

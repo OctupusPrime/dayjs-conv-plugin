@@ -36,18 +36,21 @@ export default (option, dayjsClass, dayjsFactory) => {
       ]
 
     //check is date same
-    return [
-      null,
-      {
-        start: utcStartDate.getTimeSeconds(),
-        end: utcEndDate.getTimeSeconds()
-      },
-      null
-    ]
+    return {
+      start: utcStartDate.getTimeSeconds(),
+      end: utcEndDate.getTimeSeconds()
+    }
   }
 
   dayjsClass.prototype.convFromSeconds = function(secondsArr) {
     const currDate = this.utc(true).startOf('day')
+
+    if (!Array.isArray(secondsArr))
+      return {
+        start: currDate.set('second', secondsArr.start),
+        end: currDate.add(1, 'day').set('second', secondsArr.end)
+      }
+
     const [previusTime, currTime, nextTime] = secondsArr
 
     if (previusTime)
