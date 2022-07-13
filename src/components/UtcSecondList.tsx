@@ -1,8 +1,13 @@
 import React from "react";
 import UtcSecondItem from "./UtcSecondItem";
 
+type TimeSeconds = ({
+  start: number;
+  end: number
+} | null) | {start: number, end: number}
+
 interface UtcSecondListProps {
-  list: ({start: number, end: number} | null)[] | {start: number, end: number}
+  list: TimeSeconds
 }
 
 const UtcSecondList = ({list}: UtcSecondListProps) => {
@@ -23,7 +28,7 @@ const UtcSecondList = ({list}: UtcSecondListProps) => {
           ))}
         </>
       ) : (
-        <UtcSecondItem {...list}/>
+        <UtcSecondItem start={list?.start || 0} end={list?.end || 0}/>
       )}
     </div>
   );

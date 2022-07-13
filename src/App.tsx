@@ -15,16 +15,17 @@ const secArr = [{
   end: 32400
 }]
 
-type SecondsArr = {
-  start: number,
+type TimeSeconds = ({
+  start: number;
   end: number
-}
+} | null) | {start: number, end: number}
+
 
 function App() {
   const [timezone, setTimezone] = useState<string>('')
   const [timeRange, setTimeRange] = useState<[number, number]>([9, 17])
 
-  const secondsArr: (SecondsArr | null)[] | {start: number, end: number} = useMemo(() => {
+  const secondsArr: TimeSeconds = useMemo(() => {
     const startTime = dayjs().tz(timezone || 'UTC', true).hour(timeRange[0]).startOf('hour')
     const endTime   = dayjs().tz(timezone || 'UTC', true).hour(timeRange[1]).startOf('hour')
 
