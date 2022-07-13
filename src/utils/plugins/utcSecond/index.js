@@ -48,7 +48,7 @@ export default (option, dayjsClass, dayjsFactory) => {
     if (!Array.isArray(secondsArr))
       return {
         start: currDate.set('second', secondsArr.start),
-        end: currDate.add(1, 'day').set('second', secondsArr.end)
+        end: currDate.set('second', secondsArr.end)
       }
 
     const [previusTime, currTime, nextTime] = secondsArr

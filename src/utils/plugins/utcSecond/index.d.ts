@@ -1,9 +1,9 @@
 import { PluginFunc, ConfigType, Dayjs } from 'dayjs'
 
-type TimeSeconds = {
+type TimeSeconds = ({
   start: number;
   end: number
-}
+} | null) | {start: number, end: number}
 
 declare const plugin: PluginFunc
 export = plugin
@@ -12,9 +12,9 @@ declare module 'dayjs' {
   interface Dayjs {
     getTimeSeconds(): number
 
-    utcSecond(endTime: Dayjs): (TimeSeconds | null)[] | {start: number, end: number}
+    utcSecond(endTime: Dayjs): TimeSeconds
 
-    convFromSeconds(secondsArr: (TimeSeconds | null)[] | {start: number, end: number}): {start: Dayjs, end: Dayjs}
+    convFromSeconds(secondsArr: TimeSeconds): {start: Dayjs, end: Dayjs}
   }
 
   // export func for DayjsFuctory
