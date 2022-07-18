@@ -9,7 +9,7 @@ export default (option, dayjsClass, dayjsFactory) => {
 
     const blocksArr = []
 
-    if (startUnixSec + blockSizeInMs - 6000 > endUnixSec)
+    if (startUnixSec + blockSizeInMs > endUnixSec)
       return blocksArr
 
     while (endUnixSec > startUnixSec) {
@@ -22,5 +22,40 @@ export default (option, dayjsClass, dayjsFactory) => {
     }
 
     return blocksArr
+  }
+
+  dayjsFactory.createWeekAvail = (dates, secondsTime) => {
+    let availArr = [[], [], [], [], [], [], []]
+
+    const [previus, curr, next] = secondsTime
+
+    for (let i = 0; i < 7; i++) {
+      if (dates.includes(i + '')) {
+        if (previus) 
+          availArr[i - 1 < 0 ? 6 : i - 1].push(previus)
+        
+        if (curr)
+          availArr[i].push(curr)
+
+        if (next)
+          availArr[i + 1 > 6 ? 0 : i + 1].push(next)
+      }
+    }
+
+    return availArr
+  }
+
+  dayjsFactory.weekDurationTz = (durationArr, tz) => {
+    let newDurationArr = [[], [], [], [], [], [], []]
+
+    //Get all days in one arr
+    const datesArr = durationArr.flat(1).map(el => el.tz(tz))
+
+    //Check pos in week index and set
+    datesArr.forEach(date => {
+      newDurationArr[date.day()].push(date)
+    })
+
+    return newDurationArr
   }
 }

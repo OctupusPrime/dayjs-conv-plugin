@@ -14,7 +14,7 @@ declare module 'dayjs' {
 
     utcSecond(endTime: Dayjs, currDate: Dayjs): TimeSeconds[]
 
-    convFromSeconds(secondsArr: TimeSeconds[] | {start: number, end: number}): {start: Dayjs, end: Dayjs}
+    convFromSeconds(secondsArr: TimeSeconds[] | TimeSeconds): {start: Dayjs, end: Dayjs}
   }
 
   // export func for DayjsFuctory

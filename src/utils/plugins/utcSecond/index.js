@@ -33,7 +33,7 @@ export default (option, dayjsClass, dayjsFactory) => {
       return [
         {
           start: utcStartDate.getTimeSeconds(),
-          end: utcStartDate.endOf('day').getTimeSeconds()
+          end: utcStartDate.endOf('day').getTimeSeconds() + 1
         },
         {
           start: utcEndDate.startOf('day').getTimeSeconds(),
@@ -69,7 +69,7 @@ export default (option, dayjsClass, dayjsFactory) => {
         null,
         {
           start: utcStartDate.getTimeSeconds(),
-          end: utcStartDate.endOf('day').getTimeSeconds()
+          end: utcStartDate.endOf('day').getTimeSeconds() + 1
         },
         {
           start: utcEndDate.startOf('day').getTimeSeconds(),

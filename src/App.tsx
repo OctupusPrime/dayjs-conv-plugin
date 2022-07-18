@@ -6,15 +6,20 @@ import { Button, RangeSlider } from '@mantine/core';
 import TimezoneSelect from './components/TimezoneSelect';
 import UtcSecondList from './components/UtcSecondList';
 import DateRangeItem from './components/DateRangeItem';
+import WeekDayPicker from './components/WeekDayPicker';
+import TimeDurationList from './components/TimeDurationList';
 
 type TimeSeconds = ({
   start: number;
   end: number
 } | null)
 
+
 function App() {
   const [timezone, setTimezone] = useState<string>('')
   const [timeRange, setTimeRange] = useState<[number, number]>([9, 17])
+
+  const [availDays, setAvailDays] = useState<string[]>(['1', '2', '3', '4', '5'])
 
   const secondsArr: TimeSeconds[] = useMemo(() => {
     const startTime = dayjs().tz(timezone || 'UTC', true).hour(timeRange[0]).startOf('hour')
@@ -29,45 +34,23 @@ function App() {
     return dateRange
   }, [secondsArr])
 
-  const weekSecondsArr = () => {
+  const timeDurations: Dayjs[][] = useMemo(() => {
     const blockDuration = 60
 
     const currDate = dayjs().tz(timezone || 'UTC', true)
 
-    const weekArr: {start: number, end: number}[][] = [[], [], [], [], [], [], []]
-
-    // Mon - Fri
-    for (let i = 1; i < 6; i++) {
-      const startTime = currDate.day(i).hour(timeRange[0]).startOf('hour')
-      const endTime   = currDate.day(i).hour(timeRange[1]).startOf('hour')
-
-      const [previus, curr, next] = startTime.utcSecond(endTime, dayjs())
-
-      if (previus)
-        weekArr[i - 1].push(previus)
-
-      if (curr) 
-        weekArr[i].push(curr)
-
-      if (next)
-        weekArr[i + 1].push(next)
-
-    }
-
-    console.log('Seconds arr')
-    console.log(JSON.stringify(weekArr))
+    const weekArrSec = dayjs.createWeekAvail(availDays, secondsArr)    
 
     //Conv back to dayjs
-    const times = weekArr.map((el, index) => 
+    const availArrDayjs = weekArrSec.map((el, index) => 
       el.map(time => currDate.day(index).convFromSeconds(time)))
 
-    //Get times durations
-    const timesDurations =  times.map(el => 
+    // //Get times durations
+    const parsedDurations = availArrDayjs.map(el => 
       el.map(time => time.start.getBlocksDuration(time.end, blockDuration)).flat(1))
 
-    console.log('Durations arr')
-    console.log(JSON.stringify(timesDurations))
-  }
+    return parsedDurations
+  }, [secondsArr, availDays, timezone])
 
   return (
     <div className="max-w-lg mx-auto w-[95%]">
@@ -113,13 +96,6 @@ function App() {
           onChange={setTimeRange}
         />
       </div>
-
-      <div className='my-2 text-center'>
-        <Button onClick={weekSecondsArr}>
-          Create 7 days arr
-        </Button>
-      </div>
-
     
       <div className="mb-4">
         <p className='font-medium mb-2'>Date in seconds items</p>
@@ -130,14 +106,30 @@ function App() {
       <div className="mb-4 space-y-2">
         <p className='font-medium'>Seconds back to dayjs</p>
 
-        <p className='text-center text-gray-600 font-sm'>UTC time</p>
-        <DateRangeItem 
-          {...datesArr}/>
-
         <p className='text-center text-gray-600 font-sm'>Selected tz time</p>
         <DateRangeItem 
           start={datesArr.start.tz(timezone || 'UTC')}
           end={datesArr.end.tz(timezone || 'UTC')}/>
+
+      </div>
+
+      <div className='mb-4 space-y-2'>
+        <div className="flex justify-between items-center mb-2">
+          <p className='font-medium'>Select avail week days</p>
+
+          <Button onClick={() => setAvailDays(['1', '2', '3', '4', '5'])}>
+            Mon - Fri
+          </Button>
+        </div>
+
+        <WeekDayPicker 
+          state={availDays}
+          onChange={setAvailDays}/>
+      </div>
+
+      <div className='mb-4 space-y-2'>
+        <p className='text-center text-gray-600 font-sm'>Selected tz time</p>
+        <TimeDurationList list={dayjs.weekDurationTz(timeDurations, timezone || 'UTC')}/>
       </div>
     </div>
   )
