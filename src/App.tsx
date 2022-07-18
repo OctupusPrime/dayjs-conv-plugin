@@ -33,7 +33,11 @@ function App() {
   }, [timezone, timeRange])
 
   const datesArr: {start: Dayjs, end: Dayjs} = useMemo(() => {
-    return dayjs().convFromSeconds(secondsArr)
+    console.log(secondsArr)
+    const dateRange = dayjs().convFromSeconds(secondsArr)
+
+    console.log(dateRange.start.getBlocksDuration(dateRange.end, 45))
+    return dateRange
   }, [secondsArr])
 
   return (
