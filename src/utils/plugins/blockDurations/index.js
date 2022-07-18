@@ -1,5 +1,7 @@
 export default (option, dayjsClass, dayjsFactory) => {
   dayjsClass.prototype.getBlocksDuration = function(endTime, blockSize) {
+    const blockSizeInMs = blockSize * 60000
+
     let startDate = this.utc().clone()
 
     let startUnixSec = this.utc().valueOf()
@@ -7,12 +9,16 @@ export default (option, dayjsClass, dayjsFactory) => {
 
     const blocksArr = []
 
+    if (startUnixSec + blockSizeInMs - 6000 > endUnixSec)
+      return blocksArr
+
     while (endUnixSec > startUnixSec) {
-      blocksArr.push(startDate)
+      if (startDate.valueOf() + blockSizeInMs <= endUnixSec)
+        blocksArr.push(startDate)
 
       startDate = startDate.add(blockSize, 'minute')
 
-      startUnixSec += blockSize * 60000
+      startUnixSec += blockSizeInMs
     }
 
     return blocksArr
