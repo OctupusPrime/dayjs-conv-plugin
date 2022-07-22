@@ -21,7 +21,7 @@ const TimeDurationList = ({list}: TimeDurationListProps) => {
               ))}    
             </ul>
           ) : (
-            <p className="text-center -mt-2">empty</p>
+            <p className="text-center h-[32px]">empty</p>
           )}
 
         </div>

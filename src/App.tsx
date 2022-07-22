@@ -35,21 +35,14 @@ function App() {
   }, [secondsArr])
 
   const timeDurations: Dayjs[][] = useMemo(() => {
-    const blockDuration = 60
-
     const currDate = dayjs().tz(timezone || 'UTC', true)
 
     const weekArrSec = dayjs.createWeekAvail(availDays, secondsArr)    
 
-    //Conv back to dayjs
-    const availArrDayjs = weekArrSec.map((el, index) => 
-      el.map(time => currDate.day(index).convFromSeconds(time)))
+    const dayjsUTCAvail = currDate.convAvailToUTC(weekArrSec)
 
-    // //Get times durations
-    const parsedDurations = availArrDayjs.map(el => 
-      el.map(time => time.start.getBlocksDuration(time.end, blockDuration)).flat(1))
-
-    return parsedDurations
+    console.log(JSON.stringify(dayjs()), {}.toString(), {} + '')
+    return dayjsUTCAvail
   }, [secondsArr, availDays, timezone])
 
   return (
@@ -62,7 +55,7 @@ function App() {
           Plugin to convert time to utc seconds and vice versa
         </p>
       </div>
-
+      {timezone}
       <div className="mb-4">
         <div className="flex justify-between items-center mb-2">
           <p className='font-medium'>Select timezone</p>
@@ -106,6 +99,11 @@ function App() {
       <div className="mb-4 space-y-2">
         <p className='font-medium'>Seconds back to dayjs</p>
 
+        <p className='text-center text-gray-600 font-sm'>UTC time</p>
+        <DateRangeItem 
+          start={datesArr.start}
+          end={datesArr.end}/>
+
         <p className='text-center text-gray-600 font-sm'>Selected tz time</p>
         <DateRangeItem 
           start={datesArr.start.tz(timezone || 'UTC')}
@@ -128,8 +126,11 @@ function App() {
       </div>
 
       <div className='mb-4 space-y-2'>
+        <p className='text-center text-gray-600 font-sm'>Utc time</p>
+        <TimeDurationList list={timeDurations}/>
+
         <p className='text-center text-gray-600 font-sm'>Selected tz time</p>
-        <TimeDurationList list={dayjs.weekDurationTz(timeDurations, timezone || 'UTC')}/>
+        <TimeDurationList list={dayjs.changeAvailOpts(timeDurations, timezone || 'UTC', 60)}/>
       </div>
     </div>
   )
