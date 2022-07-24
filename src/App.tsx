@@ -41,7 +41,7 @@ function App() {
 
     const dayjsUTCAvail = currDate.convAvailToUTC(weekArrSec)
 
-    console.log(JSON.stringify(dayjs()), {}.toString(), {} + '')
+    // console.log(JSON.stringify(dayjs()), {}.toString(), {} + '')
     return dayjsUTCAvail
   }, [secondsArr, availDays, timezone])
 
@@ -64,7 +64,7 @@ function App() {
             Local timezone
           </Button>
         </div>
-
+        <p>{timezone}</p>
         <TimezoneSelect 
           value={timezone}
           onChange={setTimezone}
@@ -125,13 +125,13 @@ function App() {
           onChange={setAvailDays}/>
       </div>
 
-      <div className='mb-4 space-y-2'>
+      {/* <div className='mb-4 space-y-2'>
         <p className='text-center text-gray-600 font-sm'>Utc time</p>
         <TimeDurationList list={timeDurations}/>
 
         <p className='text-center text-gray-600 font-sm'>Selected tz time</p>
         <TimeDurationList list={dayjs.changeAvailOpts(timeDurations, timezone || 'UTC', 60)}/>
-      </div>
+      </div> */}
     </div>
   )
 }
