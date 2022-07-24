@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import dayjs from './utils/dayjs';
 import { type Dayjs } from 'dayjs';
 
-import { Button, RangeSlider } from '@mantine/core';
+import { Button, JsonInput, RangeSlider, Select, Switch } from '@mantine/core';
 import TimezoneSelect from './components/TimezoneSelect';
 import UtcSecondList from './components/UtcSecondList';
 import DateRangeItem from './components/DateRangeItem';
@@ -18,32 +18,49 @@ type TimeSeconds = ({
 function App() {
   const [timezone, setTimezone] = useState<string>('')
   const [timeRange, setTimeRange] = useState<[number, number]>([9, 17])
+  const [blockSize, setBlockSize] = useState('60')
+
+  const [availJSON, setAvailJSON] = useState('')
+
+  const [isJSON, setIsJSON] = useState(false)
 
   const [availDays, setAvailDays] = useState<string[]>(['1', '2', '3', '4', '5'])
 
-  const secondsArr: TimeSeconds[] = useMemo(() => {
-    const startTime = dayjs().tz(timezone || 'UTC', true).hour(timeRange[0]).startOf('hour')
-    const endTime   = dayjs().tz(timezone || 'UTC', true).hour(timeRange[1]).startOf('hour')
+  const availInDayjs = useMemo(() => {
+    if (!timezone)
+      return [[], [], [], [], [], [], []]
 
-    return startTime.utcSecond(endTime, dayjs())
-  }, [timezone, timeRange])
+    if (isJSON) {
+      try {
+        const secondAvail = JSON.parse(availJSON)
+    
+        return dayjs().secondsToAvail(secondAvail, timezone)
+      } catch (e) {
+        return [[], [], [], [], [], [], []]
+      }
+    }
 
-  const datesArr: {start: Dayjs, end: Dayjs} = useMemo(() => {
-    const dateRange = dayjs().convFromSeconds(secondsArr)
+    const dateRange = {
+      start: dayjs().tz(timezone, true).hour(timeRange[0]).startOf('hour'),
+      end: dayjs().tz(timezone, true).hour(timeRange[1]).startOf('hour')
+    }
 
-    return dateRange
-  }, [secondsArr])
+    const boolAvailDays: boolean[] = []
 
-  const timeDurations: Dayjs[][] = useMemo(() => {
-    const currDate = dayjs().tz(timezone || 'UTC', true)
+    for (let i = 0; i < 7; i++) {
+      boolAvailDays.push(availDays.includes(i + ''))
+    }
 
-    const weekArrSec = dayjs.createWeekAvail(availDays, secondsArr)    
+    return dayjs.generateAvail(dateRange, boolAvailDays)
+  }, [timeRange, timezone, availDays, isJSON, availJSON])
 
-    const dayjsUTCAvail = currDate.convAvailToUTC(weekArrSec)
+  const availInDurations = useMemo(() => {
+    return dayjs.availToBlockDurr(availInDayjs, Number(blockSize))
+  }, [availInDayjs, blockSize])
 
-    // console.log(JSON.stringify(dayjs()), {}.toString(), {} + '')
-    return dayjsUTCAvail
-  }, [secondsArr, availDays, timezone])
+  const availInSeconds = useMemo(() => {
+    return dayjs.availToSeconds(availInDayjs)
+  }, [availInDayjs])
 
   return (
     <div className="max-w-lg mx-auto w-[95%]">
@@ -55,7 +72,16 @@ function App() {
           Plugin to convert time to utc seconds and vice versa
         </p>
       </div>
-      {timezone}
+      <div className="mb-4">
+        <div className="flex justify-between items-center mb-2">
+          <p className='font-medium'>Insert your seconds JSON</p>
+
+          <Switch 
+            checked={isJSON}
+            onChange={(event) => setIsJSON(event.currentTarget.checked)}/>
+        </div>     
+      </div>
+
       <div className="mb-4">
         <div className="flex justify-between items-center mb-2">
           <p className='font-medium'>Select timezone</p>
@@ -64,74 +90,91 @@ function App() {
             Local timezone
           </Button>
         </div>
-        <p>{timezone}</p>
         <TimezoneSelect 
           value={timezone}
           onChange={setTimezone}
         />
       </div>
 
-      <div className="mb-4">
-        <div className="flex justify-between items-center mb-2">
-          <p className='font-medium'>Select time range</p>
+      {isJSON ? (
+        <>
+          <JsonInput 
+            label="Avail seconds in JSON"
+            placeholder="Insert your JSON"
+            validationError="Invalid json"
+            autosize
+            minRows={4}
+            value={availJSON}
+            onChange={setAvailJSON}/>
+        </>
+      ) : (
+        <>
+          <div className="mb-4">
+            <div className="flex justify-between items-center mb-2">
+              <p className='font-medium'>Select time range</p>
 
-          <Button onClick={() => setTimeRange([9, 17])}>
-            9 - 17
-          </Button>
-        </div>
+              <Button onClick={() => setTimeRange([9, 17])}>
+                9 - 17
+              </Button>
+            </div>
 
-        <RangeSlider 
-          min={0}
-          max={23}
-          labelAlwaysOn
-          minRange={1}
-          value={timeRange}
-          onChange={setTimeRange}
-        />
-      </div>
+            <RangeSlider 
+              min={0}
+              max={23}
+              labelAlwaysOn
+              minRange={1}
+              value={timeRange}
+              onChange={setTimeRange}
+            />
+          </div>
+
+          <div className='mb-4 space-y-2'>
+            <div className="flex justify-between items-center mb-2">
+              <p className='font-medium'>Select avail week days</p>
+
+              <Button onClick={() => setAvailDays(['1', '2', '3', '4', '5'])}>
+                Mon - Fri
+              </Button>
+            </div>
+
+            <WeekDayPicker 
+              state={availDays}
+              onChange={setAvailDays}/>
+
+          </div> 
+        </>
+      )}
+
+    <div className='mb-4 space-y-2'>
+      <Select
+        label="Select duration"
+        placeholder="Pick one"
+        value={blockSize}
+        onChange={(val) => val ? setBlockSize(val) : false}
+        data={[
+          { value: '15', label: '15 mins' },
+          { value: '30', label: '30 mins' },
+          { value: '60', label: '1 hour' },
+          { value: '90', label: '1.5 hour' },
+          { value: '120', label: '2 hours' },
+          { value: '180', label: '3 hours' },
+        ]}
+      />
+    </div>
     
-      <div className="mb-4">
-        <p className='font-medium mb-2'>Date in seconds items</p>
+      <div className='mb-4 space-y-2'>
+        <p className='font-medium'>Availability in durations</p>
 
-        <UtcSecondList list={secondsArr}/>
-      </div>
-
-      <div className="mb-4 space-y-2">
-        <p className='font-medium'>Seconds back to dayjs</p>
-
-        <p className='text-center text-gray-600 font-sm'>UTC time</p>
-        <DateRangeItem 
-          start={datesArr.start}
-          end={datesArr.end}/>
-
-        <p className='text-center text-gray-600 font-sm'>Selected tz time</p>
-        <DateRangeItem 
-          start={datesArr.start.tz(timezone || 'UTC')}
-          end={datesArr.end.tz(timezone || 'UTC')}/>
-
+        <TimeDurationList list={availInDurations}/>
       </div>
 
       <div className='mb-4 space-y-2'>
-        <div className="flex justify-between items-center mb-2">
-          <p className='font-medium'>Select avail week days</p>
+        <p className='font-medium'>Availability in seconds</p>
 
-          <Button onClick={() => setAvailDays(['1', '2', '3', '4', '5'])}>
-            Mon - Fri
-          </Button>
-        </div>
-
-        <WeekDayPicker 
-          state={availDays}
-          onChange={setAvailDays}/>
+        <p className='rounded-md border-2 border-gray-700 p-3'>
+          {JSON.stringify(availInSeconds)}
+        </p>
       </div>
-
-      {/* <div className='mb-4 space-y-2'>
-        <p className='text-center text-gray-600 font-sm'>Utc time</p>
-        <TimeDurationList list={timeDurations}/>
-
-        <p className='text-center text-gray-600 font-sm'>Selected tz time</p>
-        <TimeDurationList list={dayjs.changeAvailOpts(timeDurations, timezone || 'UTC', 60)}/>
-      </div> */}
     </div>
   )
 }
