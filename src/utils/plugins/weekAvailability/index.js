@@ -23,6 +23,15 @@ function isDayAfter(startDate, endDate) {
   return startTime > endTime
 }
 
+function addMinutes(date, minutes) {
+  const timeInMinutes = date.hour() * 60 + date.minute() + minutes
+
+  const mergetHours = Math.floor(timeInMinutes / 60)
+  const mergetMinutes = timeInMinutes % 60
+
+  return date.hour(mergetHours).minute(mergetMinutes)
+}
+
 export default (option, dayjsClass, dayjsFactory) => {
   dayjsClass.prototype.getTimeSeconds = function() {
     return this.hour() * 3600 + this.minute() * 60 + this.second()
@@ -30,8 +39,8 @@ export default (option, dayjsClass, dayjsFactory) => {
 
   //conv to seconds and back
   dayjsClass.prototype.utcSecond = function(endTime) {
-    const utcStartDate = this.utc()
-    const utcEndDate = endTime.utc()
+    const utcStartDate = this.isUTC() ? this : this.utc()
+    const utcEndDate = endTime.isUTC() ? endTime : endTime.utc()
 
     if (isDayBefore(utcStartDate, this)) {
       if (isDayBefore(utcEndDate, this))
@@ -195,17 +204,6 @@ export default (option, dayjsClass, dayjsFactory) => {
   }
 
   dayjsClass.prototype.secondsToAvail = function(secondsAvail, tz) {
-    //conv second to dayjs arr
-    // const dayjsArr = secondsAvail.map((day, index) => 
-    //   day.map(el => {
-    //     const dayDurr = this.day(index).convFromSeconds(el)
-
-    //     return {
-    //       start: dayDurr.start.tz(tz),
-    //       end: dayDurr.end.tz(tz)
-    //     }
-    //   })
-    // ).flat(1)
     const dayjsArr = []
 
     secondsAvail.forEach((day, index) => {
@@ -231,7 +229,6 @@ export default (option, dayjsClass, dayjsFactory) => {
         }
       })
     })
-
     //merge splited times
     const mergeTimes = []
 
@@ -270,7 +267,7 @@ export default (option, dayjsClass, dayjsFactory) => {
   dayjsClass.prototype.generateBlocksFromDurr = function(endTime, blockSize) {
     const blockSizeInMs = blockSize * 60000
 
-    let startDate = this.clone()
+    let startDate = this
 
     let startUnixSec = this.valueOf()
     const endUnixSec = endTime.valueOf()
@@ -284,7 +281,7 @@ export default (option, dayjsClass, dayjsFactory) => {
       if (this.valueOf() + blockSizeInMs <= endUnixSec)
         blocksArr.push(startDate)
 
-      startDate = startDate.add(blockSize, 'minute')
+      startDate = addMinutes(startDate, blockSize)
 
       startUnixSec += blockSizeInMs
     }

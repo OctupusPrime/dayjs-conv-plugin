@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import dayjs from './utils/dayjs';
 import { type Dayjs } from 'dayjs';
 
@@ -40,9 +40,23 @@ function App() {
       }
     }
 
+    // const tzDateRange = {
+    //   start: dayjs().tz(timezone, true).format(),
+    //   end: dayjs().tz(timezone, true).valueOf()
+    // }
+
+    // const tzDateRange2 = dayjs().hour(timeRange[0]).startOf('hour').properTz(timezone)
+
+    // console.log(JSON.stringify(tzDateRange2))
+
+    // console.log(tzDateRange.start, 'tz')
+
+    // console.log(dayjs.stringToDate(tzDateRange.start).format(), 'conv')
+
+    
     const dateRange = {
-      start: dayjs().tz(timezone, true).hour(timeRange[0]).startOf('hour'),
-      end: dayjs().tz(timezone, true).hour(timeRange[1]).startOf('hour')
+      start: dayjs().hour(timeRange[0]).startOf('hour').properTz(timezone),
+      end: dayjs().hour(timeRange[1]).startOf('hour').properTz(timezone)
     }
 
     const boolAvailDays: boolean[] = []
