@@ -1,19 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
 import dayjs from './utils/dayjs';
-import { type Dayjs } from 'dayjs';
 
 import { Button, JsonInput, RangeSlider, Select, Switch } from '@mantine/core';
 import TimezoneSelect from './components/TimezoneSelect';
-import UtcSecondList from './components/UtcSecondList';
-import DateRangeItem from './components/DateRangeItem';
 import WeekDayPicker from './components/WeekDayPicker';
 import TimeDurationList from './components/TimeDurationList';
 
-type TimeSeconds = ({
-  start: number;
-  end: number
-} | null)
-
+const blocksObj: Record<string, { start: string; end: string }[]> = {
+  '26-07-2022': [
+    {start: '2022-07-26T08:00:00Z', end: '2022-07-26T10:00:00Z'},
+    {start: '2022-07-26T17:00:00Z', end: '2022-07-26T18:00:00Z'}
+  ]
+}
 
 function App() {
   const [timezone, setTimezone] = useState<string>('')
@@ -55,8 +53,8 @@ function App() {
 
     
     const dateRange = {
-      start: dayjs().hour(timeRange[0]).startOf('hour').properTz(timezone),
-      end: dayjs().hour(timeRange[1]).startOf('hour').properTz(timezone)
+      start: dayjs().hour(timeRange[0]).startOf('hour').properTz(timezone, true),
+      end: dayjs().hour(timeRange[1]).startOf('hour').properTz(timezone, true)
     }
 
     const boolAvailDays: boolean[] = []
@@ -75,6 +73,20 @@ function App() {
   const availInSeconds = useMemo(() => {
     return dayjs.availToSeconds(availInDayjs)
   }, [availInDayjs])
+
+  useEffect(() => {
+    if (timezone) {
+      const todayBlocks = blocksObj['26-07-2022'].map(el => ({
+        start: dayjs.stringToDate(el.start).properTz(timezone),
+        end: dayjs.stringToDate(el.end).properTz(timezone)
+      }))
+  
+      const blockedTimes = dayjs.addBlockedTimes(availInDurations[2], todayBlocks, Number(blockSize))
+
+      console.log(JSON.stringify(blockedTimes))
+    }
+
+  }, [availInDurations, timezone, blockSize])
 
   return (
     <div className="max-w-lg mx-auto w-[95%]">

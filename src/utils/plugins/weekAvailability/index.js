@@ -296,4 +296,32 @@ export default (option, dayjsClass, dayjsFactory) => {
 
     return blocksArr
   }
+
+  dayjsFactory.addBlockedTimes = (dayjsDurr, blocksArr, itemSize) => {
+    let arrWithBlocked = []
+
+    if (!blocksArr.length)
+      return dayjsDurr
+
+    blocksArr.forEach((blockItem, index) => {
+      //Initial blocks
+      if (index === 0) {
+        dayjsDurr.forEach(el => {
+          if (el.isAfter(blockItem.end, 'minute') 
+            || el.isSame(blockItem.end, 'minute')
+            ||addMinutes(el, itemSize - 1).isBefore(blockItem.start, 'minute'))
+            arrWithBlocked.push(el)
+        })
+      } else {
+        arrWithBlocked = arrWithBlocked.filter(el => {
+          if (el.isAfter(blockItem.end, 'minute') 
+            || el.isSame(blockItem.end, 'minute')
+            || addMinutes(el, itemSize - 1).isBefore(blockItem.start, 'minute'))
+            return el
+        })
+      }
+    })
+
+    return arrWithBlocked
+  }
 }

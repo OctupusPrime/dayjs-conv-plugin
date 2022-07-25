@@ -7,7 +7,7 @@ declare module 'dayjs' {
   interface Dayjs {
     toJSON(): string
     
-    properTz(tz: string): Dayjs
+    properTz(tz: string, isSave?: boolean): Dayjs
   }
 
   export function stringToDate(isoString: string): Dayjs

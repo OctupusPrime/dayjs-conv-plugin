@@ -25,4 +25,6 @@ declare module 'dayjs' {
   export function availToSeconds(dayjsAvail: DayjsDurr[][]): SecondDurr[][]
 
   export function availToBlockDurr(dayjsAvail: DayjsDurr[][], blockSize: number): Dayjs[][]
+
+  export function addBlockedTimes(dayjsDurr: Dayjs[], blocksArr: DayjsDurr[], itemSize: number): Dayjs[]
 }

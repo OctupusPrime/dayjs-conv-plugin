@@ -5,8 +5,11 @@ export default (dayjsInst, dayjsClass, dayjsFactory) => {
     return this.format()
   }
 
-  dayjsClass.prototype.properTz = function(tz) {
-    return this.utc(true).startOf('date').tz(tz, true).hour(this.hour()).minute(this.minute()).second(this.second())
+  dayjsClass.prototype.properTz = function(tz, isSave) {
+    if (isSave)
+      return this.utc(true).startOf('date').tz(tz, true).hour(this.hour()).minute(this.minute()).second(this.second())
+
+    return this.utc().tz(tz)
   }
 
   dayjsFactory.stringToDate = (isoString) => {
