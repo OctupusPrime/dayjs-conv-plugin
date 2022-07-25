@@ -324,4 +324,26 @@ export default (option, dayjsClass, dayjsFactory) => {
 
     return arrWithBlocked
   }
+
+  dayjsClass.prototype.availDurrChangeDate = function(availDurr) {
+    //Generate from date to week of dates
+    const weekDates = []
+
+    for (let i = 0; i < 7; i++) {
+      weekDates.push(this.day(i))
+    }
+
+    const newAvailDurr = availDurr.map((day, dayIndex) => {
+      const selecedDate = weekDates[dayIndex]
+
+      return day.map(time => 
+        time
+          .year(selecedDate.year())
+          .month(selecedDate.month())
+          .date(selecedDate.date())
+        )
+    })
+
+    return newAvailDurr
+  }
 }

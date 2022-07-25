@@ -18,6 +18,8 @@ declare module 'dayjs' {
     secondsToAvail(secondsAvail: SecondDurr[][], tz: string): DayjsDurr[][]
 
     generateBlocksFromDurr(endTime: Dayjs, blockSize: number): Dayjs[]
+
+    availDurrChangeDate(availDurr: Dayjs[][]): Dayjs[][]
   }
 
   export function generateAvail(times: DayjsDurr, availDays: boolean[]): DayjsDurr[][]

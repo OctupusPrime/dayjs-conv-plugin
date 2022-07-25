@@ -74,19 +74,25 @@ function App() {
     return dayjs.availToSeconds(availInDayjs)
   }, [availInDayjs])
 
-  useEffect(() => {
-    if (timezone) {
-      const todayBlocks = blocksObj['26-07-2022'].map(el => ({
-        start: dayjs.stringToDate(el.start).properTz(timezone),
-        end: dayjs.stringToDate(el.end).properTz(timezone)
-      }))
+  //Add blocks
+  // useEffect(() => {
+  //   if (timezone) {
+  //     const todayBlocks = blocksObj['26-07-2022'].map(el => ({
+  //       start: dayjs.stringToDate(el.start).properTz(timezone),
+  //       end: dayjs.stringToDate(el.end).properTz(timezone)
+  //     }))
   
-      const blockedTimes = dayjs.addBlockedTimes(availInDurations[2], todayBlocks, Number(blockSize))
+  //     const blockedTimes = dayjs.addBlockedTimes(availInDurations[2], todayBlocks, Number(blockSize))
 
-      console.log(JSON.stringify(blockedTimes))
-    }
+  //     console.log(JSON.stringify(blockedTimes))
+  //   }
+  // }, [availInDurations, timezone, blockSize])
 
-  }, [availInDurations, timezone, blockSize])
+  //Change date
+  // useEffect(() => {
+  //   console.log(JSON.stringify(availInDurations), 'old')
+  //   dayjs().add(1, 'week').availDurrChangeDate(availInDurations)
+  // }, [availInDurations])
 
   return (
     <div className="max-w-lg mx-auto w-[95%]">
