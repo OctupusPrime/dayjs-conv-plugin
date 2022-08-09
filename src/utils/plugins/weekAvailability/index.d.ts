@@ -1,32 +1,47 @@
-import { PluginFunc, ConfigType, Dayjs } from 'dayjs'
+/* eslint-disable */
 
-declare const plugin: PluginFunc
-export = plugin
+import { PluginFunc, ConfigType, Dayjs } from 'dayjs';
 
-type DayjsDurr  = {start: Dayjs, end: Dayjs}
+declare const plugin: PluginFunc;
+export = plugin;
 
-type SecondDurr = {start: number, end: number}
+type DayjsDurr = { start: Dayjs; end: Dayjs };
+
+type SecondDurr = { start: number; end: number };
 
 declare module 'dayjs' {
   interface Dayjs {
-    getTimeSeconds(): number
+    getTimeSeconds(): number;
 
-    utcSecond(endTime: Dayjs): TimeSeconds[]
+    utcSecond(endTime: Dayjs): TimeSeconds[];
 
-    convFromSeconds(secondsArr: TimeSeconds[] | TimeSeconds): {start: Dayjs, end: Dayjs}
+    convFromSeconds(secondsArr: TimeSeconds[] | TimeSeconds): {
+      start: Dayjs;
+      end: Dayjs;
+    };
 
-    secondsToAvail(secondsAvail: SecondDurr[][], tz: string): DayjsDurr[][]
+    secondsToAvail(secondsAvail: SecondDurr[][], tz: string): DayjsDurr[][];
 
-    generateBlocksFromDurr(endTime: Dayjs, blockSize: number): Dayjs[]
+    generateBlocksFromDurr(endTime: Dayjs, blockSize: number): Dayjs[];
 
-    availDurrChangeDate(availDurr: Dayjs[][]): Dayjs[][]
+    durrChangeDate(availDurr: Dayjs[]): Dayjs[];
   }
 
-  export function generateAvail(times: DayjsDurr, availDays: boolean[]): DayjsDurr[][]
+  export function generateAvail(
+    times: DayjsDurr,
+    availDays: boolean[]
+  ): DayjsDurr[][];
 
-  export function availToSeconds(dayjsAvail: DayjsDurr[][]): SecondDurr[][]
+  export function availToSeconds(dayjsAvail: DayjsDurr[][]): SecondDurr[][];
 
-  export function availToBlockDurr(dayjsAvail: DayjsDurr[][], blockSize: number): Dayjs[][]
+  export function availToBlockDurr(
+    dayjsAvail: DayjsDurr[][],
+    blockSize: number
+  ): Dayjs[][];
 
-  export function addBlockedTimes(dayjsDurr: Dayjs[], blocksArr: DayjsDurr[], itemSize: number): Dayjs[]
+  export function addBlockedTimes(
+    dayjsDurr: Dayjs[],
+    blocksArr: DayjsDurr[],
+    itemSize: number
+  ): Dayjs[];
 }

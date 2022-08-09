@@ -1,79 +1,81 @@
+/* eslint-disable */
+
 function getTimeInNumber(date) {
-  return date.year() * 1000 + date.month() * 100 + date.date()
+  return date.year() * 1000 + date.month() * 100 + date.date();
 }
 
 function isDayBefore(startDate, endDate) {
-  const startTime = getTimeInNumber(startDate)
-  const endTime = getTimeInNumber(endDate)
+  const startTime = getTimeInNumber(startDate);
+  const endTime = getTimeInNumber(endDate);
 
-  return startTime < endTime
+  return startTime < endTime;
 }
 
 function isDaySame(startDate, endDate) {
-  const startTime = getTimeInNumber(startDate)
-  const endTime = getTimeInNumber(endDate)
+  const startTime = getTimeInNumber(startDate);
+  const endTime = getTimeInNumber(endDate);
 
-  return startTime === endTime
+  return startTime === endTime;
 }
 
 function isDayAfter(startDate, endDate) {
-  const startTime = getTimeInNumber(startDate)
-  const endTime = getTimeInNumber(endDate)
+  const startTime = getTimeInNumber(startDate);
+  const endTime = getTimeInNumber(endDate);
 
-  return startTime > endTime
+  return startTime > endTime;
 }
 
 function addMinutes(date, minutes) {
-  const timeInMinutes = date.hour() * 60 + date.minute() + minutes
+  const timeInMinutes = date.hour() * 60 + date.minute() + minutes;
 
-  const mergetHours = Math.floor(timeInMinutes / 60)
-  const mergetMinutes = timeInMinutes % 60
+  const mergetHours = Math.floor(timeInMinutes / 60);
+  const mergetMinutes = timeInMinutes % 60;
 
-  return date.hour(mergetHours).minute(mergetMinutes)
+  return date.hour(mergetHours).minute(mergetMinutes);
 }
 
 export default (option, dayjsClass, dayjsFactory) => {
-  dayjsClass.prototype.getTimeSeconds = function() {
-    return this.hour() * 3600 + this.minute() * 60 + this.second()
-  }
+  dayjsClass.prototype.getTimeSeconds = function () {
+    return this.hour() * 3600 + this.minute() * 60 + this.second();
+  };
 
   //conv to seconds and back
-  dayjsClass.prototype.utcSecond = function(endTime) {
-    const utcStartDate = this.isUTC() ? this : this.utc()
-    const utcEndDate = endTime.isUTC() ? endTime : endTime.utc()
+  dayjsClass.prototype.utcSecond = function (endTime) {
+    const utcStartDate = this.isUTC() ? this : this.utc();
+    const utcEndDate = endTime.isUTC() ? endTime : endTime.utc();
 
     if (isDayBefore(utcStartDate, this)) {
       if (isDayBefore(utcEndDate, this))
         return [
           {
             start: utcStartDate.getTimeSeconds(),
-            end: utcEndDate.getTimeSeconds()
+            end: utcEndDate.getTimeSeconds(),
           },
           null,
-          null
-        ]
+          null,
+        ];
 
-      if (utcEndDate.getTimeSeconds() === 0) 
+      if (utcEndDate.getTimeSeconds() === 0)
         return [
           {
             start: utcStartDate.getTimeSeconds(),
-            end: utcEndDate.endOf('day').getTimeSeconds() + 1
+            end: utcEndDate.endOf('day').getTimeSeconds() + 1,
           },
           null,
-          null
-        ]
+          null,
+        ];
 
       return [
         {
           start: utcStartDate.getTimeSeconds(),
-          end: utcStartDate.endOf('day').getTimeSeconds() + 1
+          end: utcStartDate.endOf('day').getTimeSeconds() + 1,
         },
         {
           start: utcEndDate.startOf('day').getTimeSeconds(),
-          end: utcEndDate.getTimeSeconds()
+          end: utcEndDate.getTimeSeconds(),
         },
-        null
-      ]  
+        null,
+      ];
     }
 
     if (isDayAfter(utcEndDate, this)) {
@@ -83,9 +85,9 @@ export default (option, dayjsClass, dayjsFactory) => {
           null,
           {
             start: utcStartDate.getTimeSeconds(),
-            end: utcEndDate.getTimeSeconds()
-          }
-        ]
+            end: utcEndDate.getTimeSeconds(),
+          },
+        ];
 
       //check is end === 0 and start === 0
       if (utcEndDate.getTimeSeconds() === 0)
@@ -93,22 +95,22 @@ export default (option, dayjsClass, dayjsFactory) => {
           null,
           {
             start: utcStartDate.getTimeSeconds(),
-            end: utcStartDate.endOf('day').getTimeSeconds() + 1
+            end: 86400,
           },
-          null
-        ]
+          null,
+        ];
 
       return [
         null,
         {
           start: utcStartDate.getTimeSeconds(),
-          end: utcStartDate.endOf('day').getTimeSeconds() + 1
+          end: utcStartDate.endOf('day').getTimeSeconds() + 1,
         },
         {
           start: utcEndDate.startOf('day').getTimeSeconds(),
-          end: utcEndDate.getTimeSeconds()
-        }
-      ]
+          end: utcEndDate.getTimeSeconds(),
+        },
+      ];
     }
 
     //check is date same
@@ -116,234 +118,226 @@ export default (option, dayjsClass, dayjsFactory) => {
       null,
       {
         start: utcStartDate.getTimeSeconds(),
-        end: utcEndDate.getTimeSeconds()
+        end: utcEndDate.getTimeSeconds(),
       },
-      null
-    ]
-  }
+      null,
+    ];
+  };
 
-  dayjsClass.prototype.convFromSeconds = function(secondsArr) {
-    const currDate = this.utc(true).startOf('day')
-
+  dayjsClass.prototype.convFromSeconds = function (secondsArr) {
+    const currDate = this.utc(true).startOf('day');
+    
     if (!Array.isArray(secondsArr))
       return {
         start: currDate.set('second', secondsArr.start),
-        end: currDate.set('second', secondsArr.end)
-      }
+        end: currDate.set('second', secondsArr.end),
+      };
 
-    const [previusTime, currTime, nextTime] = secondsArr
+    const [previusTime, currTime, nextTime] = secondsArr;
 
     if (previusTime) {
-      if (!currTime) 
+      if (!currTime)
         return {
           start: currDate.subtract(1, 'day').set('second', previusTime.start),
-          end: currDate.subtract(1, 'day').set('second', previusTime.end)
-        }
-      
+          end: currDate.subtract(1, 'day').set('second', previusTime.end),
+        };
+
       return {
         start: currDate.subtract(1, 'day').set('second', previusTime.start),
-        end: currDate.set('second', currTime.end)
-      }
+        end: currDate.set('second', currTime.end),
+      };
     }
 
     if (nextTime) {
       if (!currTime)
         return {
           start: currDate.add(1, 'day').set('second', nextTime.start),
-          end: currDate.add(1, 'day').set('second', nextTime.end)
-        }
+          end: currDate.add(1, 'day').set('second', nextTime.end),
+        };
 
       return {
         start: currDate.set('second', currTime.start),
-        end: currDate.add(1, 'day').set('second', nextTime.end)
-      }
+        end: currDate.add(1, 'day').set('second', nextTime.end),
+      };
     }
 
     return {
       start: currDate.set('second', currTime.start),
-      end: currDate.set('second', currTime.end)
-    }
-  }
+      end: currDate.set('second', currTime.end),
+    };
+  };
 
   //week avail
   dayjsFactory.generateAvail = (times, availDays) => {
-    const newAvail = [[], [], [], [], [], [], []]
+    const newAvail = [[], [], [], [], [], [], []];
 
     for (let i = 0; i < 7; i++) {
       if (availDays[i]) {
         newAvail[i].push({
           start: times.start.day(i),
-          end: times.end.day(i)
-        })
+          end: times.end.hour() === 0 ? times.end.day(i + 1) : times.end.day(i),
+        });
       }
     }
-  
-    return newAvail
-  }
+
+    return newAvail;
+  };
 
   dayjsFactory.availToSeconds = (dayjsAvail) => {
-    const flatArr = dayjsAvail.flat(1)
+    const flatArr = dayjsAvail.flat(1);
 
-    const secondAvail = [[], [], [], [], [], [], []]
+    const secondAvail = [[], [], [], [], [], [], []];
 
     flatArr.forEach((time) => {
-      const dayIndex = time.start.day()
-      const [previus, curr, next] = time.start.utcSecond(time.end)
+      const dayIndex = time.start.day();
+      const [previus, curr, next] = time.start.utcSecond(time.end);
 
-      if (previus) 
-        secondAvail[dayIndex - 1 < 0 ? 6 : dayIndex - 1].push(previus)
-      
-      if (curr)
-        secondAvail[dayIndex].push(curr)
+      if (previus)
+        secondAvail[dayIndex - 1 < 0 ? 6 : dayIndex - 1].push(previus);
 
-      if (next)
-        secondAvail[dayIndex + 1 > 6 ? 0 : dayIndex + 1].push(next)
+      if (curr) secondAvail[dayIndex].push(curr);
+
+      if (next) secondAvail[dayIndex + 1 > 6 ? 0 : dayIndex + 1].push(next);
     });
 
-    return secondAvail
-  }
+    return secondAvail;
+  };
 
-  dayjsClass.prototype.secondsToAvail = function(secondsAvail, tz) {
-    const dayjsArr = []
+  dayjsClass.prototype.secondsToAvail = function (secondsAvail, tz) {
+    const dayjsArr = [];
 
     secondsAvail.forEach((day, index) => {
-      day.forEach(el => {
-        const dayDurr = this.day(index).convFromSeconds(el)
+      day.forEach((el) => {
+        const dayDurr = this.day(index).convFromSeconds(el);
 
-        const startTime = dayDurr.start.tz(tz)
-        const endTime = dayDurr.end.tz(tz) 
+        const startTime = dayDurr.start.tz(tz);
+        const endTime = dayDurr.end.tz(tz);
 
-        if (isDayAfter(endTime, startTime)) {
-          dayjsArr.push({
-            start: startTime,
-            end: endTime.startOf('date')
-          }, {
-            start: endTime.startOf('date'),
-            end: endTime
-          })
+        if (isDayAfter(endTime, startTime) && endTime.hour() > 0) {
+          dayjsArr.push(
+            {
+              start: startTime,
+              end: endTime.startOf('date'),
+            },
+            {
+              start: endTime.startOf('date'),
+              end: endTime,
+            }
+          );
         } else {
           dayjsArr.push({
             start: startTime,
-            end: endTime
-          })
+            end: endTime,
+          });
         }
-      })
-    })
+      });
+    });
     //merge splited times
-    const mergeTimes = []
+    const mergeTimes = [];
 
     for (let i = 0; i < dayjsArr.length; i++) {
-      const el = dayjsArr[i]
-      const nextEl = dayjsArr[i + 1]
-      
+      const el = dayjsArr[i];
+      const nextEl = dayjsArr[i + 1];
+
       if (nextEl) {
         if (el.end.isSame(nextEl.start) && isDaySame(el.start, nextEl.end)) {
           mergeTimes.push({
             start: el.start,
-            end: nextEl.end
-          })
+            end: nextEl.end,
+          });
 
-          i++
+          i++;
         } else {
-          mergeTimes.push({...el}) 
+          mergeTimes.push({ ...el });
         }
       } else {
-        mergeTimes.push({...el}) 
+        mergeTimes.push({ ...el });
       }
     }
 
     //create new avail
-    const newDayjsAvail = [[], [], [], [], [], [], []]
+    const newDayjsAvail = [[], [], [], [], [], [], []];
 
-    mergeTimes.forEach(el => {
-      const dayIndex = el.start.day()
+    mergeTimes.forEach((el) => {
+      const dayIndex = el.start.day();
 
-      newDayjsAvail[dayIndex].push({...el})
-    })
+      newDayjsAvail[dayIndex].push({ ...el });
+    });
 
-    return newDayjsAvail
-  }
+    return newDayjsAvail;
+  };
 
-  dayjsClass.prototype.generateBlocksFromDurr = function(endTime, blockSize) {
-    const blockSizeInMs = blockSize * 60000
+  dayjsClass.prototype.generateBlocksFromDurr = function (endTime, blockSize) {
+    const blockSizeInMs = blockSize * 60000;
 
-    let startDate = this
+    /* eslint-disable */
+    let startDate = this;
 
-    let startUnixSec = this.valueOf()
-    const endUnixSec = endTime.valueOf()
+    let startUnixSec = this.valueOf();
+    const endUnixSec = endTime.valueOf();
 
-    const blocksArr = []
+    const blocksArr = [];
 
-    if (startUnixSec + blockSizeInMs > endUnixSec)
-      return blocksArr
+    if (startUnixSec + blockSizeInMs > endUnixSec) return blocksArr;
 
     while (endUnixSec > startUnixSec) {
       if (this.valueOf() + blockSizeInMs <= endUnixSec)
-        blocksArr.push(startDate)
+        blocksArr.push(startDate);
 
-      startDate = addMinutes(startDate, blockSize)
+      startDate = addMinutes(startDate, blockSize);
 
-      startUnixSec += blockSizeInMs
+      startUnixSec += blockSizeInMs;
     }
 
-    return blocksArr
-  }
+    return blocksArr;
+  };
 
   dayjsFactory.availToBlockDurr = (dayjsAvail, blockSize) => {
-    const blocksArr = dayjsAvail.map(el => 
-      el.map(time => time.start.generateBlocksFromDurr(time.end, blockSize)).flat(1)
-    )
+    const blocksArr = dayjsAvail.map((el) =>
+      el
+        .map((time) => time.start.generateBlocksFromDurr(time.end, blockSize))
+        .flat(1)
+    );
 
-    return blocksArr
-  }
+    return blocksArr;
+  };
 
   dayjsFactory.addBlockedTimes = (dayjsDurr, blocksArr, itemSize) => {
-    let arrWithBlocked = []
+    let arrWithBlocked = [];
 
-    if (!blocksArr.length)
-      return dayjsDurr
+    if (!blocksArr.length) return dayjsDurr;
 
     blocksArr.forEach((blockItem, index) => {
       //Initial blocks
       if (index === 0) {
-        dayjsDurr.forEach(el => {
-          if (el.isAfter(blockItem.end, 'minute') 
-            || el.isSame(blockItem.end, 'minute')
-            ||addMinutes(el, itemSize - 1).isBefore(blockItem.start, 'minute'))
-            arrWithBlocked.push(el)
-        })
+        dayjsDurr.forEach((el) => {
+          if (
+            el.isAfter(blockItem.end, 'minute') ||
+            el.isSame(blockItem.end, 'minute') ||
+            addMinutes(el, itemSize - 1).isBefore(blockItem.start, 'minute')
+          )
+            arrWithBlocked.push(el);
+        });
       } else {
-        arrWithBlocked = arrWithBlocked.filter(el => {
-          if (el.isAfter(blockItem.end, 'minute') 
-            || el.isSame(blockItem.end, 'minute')
-            || addMinutes(el, itemSize - 1).isBefore(blockItem.start, 'minute'))
-            return el
-        })
+        arrWithBlocked = arrWithBlocked.filter((el) => {
+          if (
+            el.isAfter(blockItem.end, 'minute') ||
+            el.isSame(blockItem.end, 'minute') ||
+            addMinutes(el, itemSize - 1).isBefore(blockItem.start, 'minute')
+          )
+            return el;
+        });
       }
-    })
+    });
 
-    return arrWithBlocked
-  }
+    return arrWithBlocked;
+  };
 
-  dayjsClass.prototype.availDurrChangeDate = function(availDurr) {
-    //Generate from date to week of dates
-    const weekDates = []
+  dayjsClass.prototype.durrChangeDate = function (timeDurr) {
+    const newDurr = timeDurr.map((time) =>
+      time.year(this.year()).month(this.month()).date(this.date())
+    );
 
-    for (let i = 0; i < 7; i++) {
-      weekDates.push(this.day(i))
-    }
-
-    const newAvailDurr = availDurr.map((day, dayIndex) => {
-      const selecedDate = weekDates[dayIndex]
-
-      return day.map(time => 
-        time
-          .year(selecedDate.year())
-          .month(selecedDate.month())
-          .date(selecedDate.date())
-        )
-    })
-
-    return newAvailDurr
-  }
-}
+    return newDurr;
+  };
+};

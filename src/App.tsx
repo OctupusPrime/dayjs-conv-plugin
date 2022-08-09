@@ -152,7 +152,7 @@ function App() {
 
             <RangeSlider 
               min={0}
-              max={23}
+              max={24}
               labelAlwaysOn
               minRange={1}
               value={timeRange}

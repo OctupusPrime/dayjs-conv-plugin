@@ -11,7 +11,7 @@ allTimezones.forEach(tz => {
     const startTime = dayjs().tz(tz, true).hour(start).startOf('hour')
     const endTime   = dayjs().tz(tz, true).hour(end).startOf('hour')
 
-    const secondsArr = startTime.utcSecond(endTime, dayjs())
+    const secondsArr = startTime.utcSecond(endTime)
 
     const convBack = dayjs().convFromSeconds(secondsArr)
 
