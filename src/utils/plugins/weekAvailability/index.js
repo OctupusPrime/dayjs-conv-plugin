@@ -59,7 +59,7 @@ export default (option, dayjsClass, dayjsFactory) => {
         return [
           {
             start: utcStartDate.getTimeSeconds(),
-            end: utcEndDate.endOf('day').getTimeSeconds() + 1,
+            end: 86400,
           },
           null,
           null,
@@ -68,10 +68,10 @@ export default (option, dayjsClass, dayjsFactory) => {
       return [
         {
           start: utcStartDate.getTimeSeconds(),
-          end: utcStartDate.endOf('day').getTimeSeconds() + 1,
+          end: 86400,
         },
         {
-          start: utcEndDate.startOf('day').getTimeSeconds(),
+          start: 0,
           end: utcEndDate.getTimeSeconds(),
         },
         null,
@@ -104,10 +104,10 @@ export default (option, dayjsClass, dayjsFactory) => {
         null,
         {
           start: utcStartDate.getTimeSeconds(),
-          end: utcStartDate.endOf('day').getTimeSeconds() + 1,
+          end: 86400,
         },
         {
-          start: utcEndDate.startOf('day').getTimeSeconds(),
+          start: 0,
           end: utcEndDate.getTimeSeconds(),
         },
       ];
