@@ -31,7 +31,7 @@ function App() {
     if (isJSON) {
       try {
         const secondAvail = JSON.parse(availJSON)
-    
+
         return dayjs().secondsToAvail(secondAvail, timezone)
       } catch (e) {
         return [[], [], [], [], [], [], []]
@@ -71,7 +71,9 @@ function App() {
   }, [availInDayjs, blockSize])
 
   const availInSeconds = useMemo(() => {
-    return dayjs.availToSeconds(availInDayjs)
+    const secondsArr = dayjs.availToSeconds(availInDayjs)
+    console.log(JSON.stringify(dayjs().secondsToAvail2(secondsArr, timezone), null, 2))
+    return secondsArr
   }, [availInDayjs])
 
   //Add blocks
@@ -100,7 +102,7 @@ function App() {
         <h1 className='text-2xl font-bold mb-4'>
           Dayjs conversion plugin 
         </h1>
-        <p className='text-gray-700 text-lg'>
+        <p className='text-white text-lg'>
           Plugin to convert time to utc seconds and vice versa
         </p>
       </div>
@@ -203,7 +205,7 @@ function App() {
       <div className='mb-4 space-y-2'>
         <p className='font-medium'>Availability in seconds</p>
 
-        <p className='rounded-md border-2 border-gray-700 p-3'>
+        <p className='rounded-md border-2 border-gray-700 p-3 select-all'>
           {JSON.stringify(availInSeconds)}
         </p>
       </div>

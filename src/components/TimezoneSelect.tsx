@@ -44,16 +44,11 @@ const TimezoneSelectV2 = ({
     if (onBlur) onBlur();
   };
 
-  const customStyles = {
-    menu: (provider: any) => ({
-      ...provider,
-      zIndex: '10',
-    }),
-  };
 
   return (
     <TimezoneSelect
-      styles={customStyles}
+      className="my-react-select-container"
+      classNamePrefix="my-react-select"
       labelStyle={labelStyle}
       value={selectedTimezone}
       onChange={validateTz}
